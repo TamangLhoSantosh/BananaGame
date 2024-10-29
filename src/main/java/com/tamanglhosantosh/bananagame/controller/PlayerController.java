@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Controller for managing Player entities in the Banana Game application.
- * This class provides endpoints for retrieving and creating Player data.
+ * Controller for managing Player entities in the Banana Game.
+ * This class provides endpoints like retrieving, creating, etc.
+ * for Player data.
  */
 @RestController
 @RequestMapping("/api")
@@ -49,13 +50,23 @@ public class PlayerController {
     }
 
     /**
+     * Check if username and email is available.
      * Creates a new player in the system.
      *
      * @param player Player entity to create.
-     * @return The created Player entity.
+     * @return The created Player entity if username and
+     * email are available, otherwise null.
      */
     @PostMapping("/player")
     public Player createPlayer(@RequestBody Player player) {
+        // Check for duplicate entries
+        Optional<Player> existingPlayer = playerService.findByUsername(player.getUsername())
+                .or(() -> playerService.findPlayerByEmail(player.getUsername()));
+
+        // Return null if username and email is not available
+        if (existingPlayer.isPresent()) {
+            return null;
+        }
         return playerService.save(player); // Save the new player to the repository
     }
 
@@ -78,20 +89,12 @@ public class PlayerController {
      */
     @PostMapping("/login")
     public Player login(@RequestBody LoginRequest loginRequest) {
-        // Fetch player by username
-        Optional<Player> player = playerService.findByUsername(loginRequest.getUsername());
+        // Attempt to fetch the player by username or email
+        Optional<Player> player = playerService.findByUsername(loginRequest.getUsername())
+                .or(() -> playerService.findPlayerByEmail(loginRequest.getUsername()));
 
-        // Check if player exists
-        if (!(player.isPresent())) {
-            // Fetch player by email
-            player = playerService.findPlayerByEmail(loginRequest.getUsername());
-        }
-
-        // Check if player exists and passwords match
-        if (player.isPresent() && (loginRequest.getPassword().equals(player.get().getPassword()))) {
-            return player.get(); // Return the found player
-        }
-        // Return null if credentials are invalid
-        return null;
+        // Validate the player's presence and password
+        return player.filter(p -> loginRequest.getPassword().equals(p.getPassword()))
+                .orElse(null);
     }
 }
