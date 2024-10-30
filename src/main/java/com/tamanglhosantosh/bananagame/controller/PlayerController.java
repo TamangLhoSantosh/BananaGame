@@ -76,7 +76,7 @@ public class PlayerController {
      * @return The Player entity if credentials are valid, otherwise null.
      */
     @PostMapping("/player/login")
-    public Player login(@RequestBody Player player) {
+    public String login(@RequestBody Player player) {
         return playerService.login(player);
     }
 }

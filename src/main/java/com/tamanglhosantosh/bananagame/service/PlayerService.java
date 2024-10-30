@@ -3,6 +3,9 @@ package com.tamanglhosantosh.bananagame.service;
 import com.tamanglhosantosh.bananagame.model.Player;
 import com.tamanglhosantosh.bananagame.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,9 @@ import java.util.Optional;
 public class PlayerService {
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
 
@@ -30,14 +36,14 @@ public class PlayerService {
         return playerRepository.save(player); // Save the new player to the repository
     }
 
-    public Player login(Player player) {
-        // Attempt to fetch the player by username or email
-        Optional<Player> existingPlayer = playerRepository.findByUsername(player.getUsername())
-                .or(() -> playerRepository.findPlayerByEmail(player.getUsername()));
+    public String login(Player player) {
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(player.getUsername(), player.getPassword()));
 
-        // Validate the player's presence and password
-        return existingPlayer.filter(p -> player.getPassword().equals(p.getPassword()))
-                .orElse(null);
+        if (authentication.isAuthenticated()) {
+            return "Success";
+        }
+        return "Fail";
     }
 
     public Optional<Player> findById(Integer id) {
