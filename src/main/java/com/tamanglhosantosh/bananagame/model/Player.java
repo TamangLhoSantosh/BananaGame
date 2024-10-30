@@ -23,12 +23,10 @@ public class Player {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id; // Unique identifier for each player
 
-    private String username;    // Player's username
-    private String firstName;   // Player's first name
-    private String lastName;    // Player's last name
-    private String middleName;  // Player's middle name
-    private String email;       // Player's email address
-    private String password;    // Player's password
+    private String username; // Player's username
+    private String firstName; // Player's first name
+    private String lastName; // Player's last name
+    private String middleName; // Player's middle name
+    private String email; // Player's email address
+    private String password; // Player's password
 }
-
-

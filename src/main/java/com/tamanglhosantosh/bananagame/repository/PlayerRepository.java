@@ -1,4 +1,4 @@
-package com.tamanglhosantosh.bananagame.dao;
+package com.tamanglhosantosh.bananagame.repository;
 
 import com.tamanglhosantosh.bananagame.model.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +14,6 @@ import java.util.Optional;
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, Integer> {
     Optional<Player> findByUsername(String username); // Method to find player by username
+
     Optional<Player> findPlayerByEmail(String email); // Method to find player by email
 }

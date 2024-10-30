@@ -12,7 +12,6 @@ package com.tamanglhosantosh.bananagame;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
 /**
  * The main application class for Banana Game.
  * Annotated with @SpringBootApplication to indicate it’s the primary
