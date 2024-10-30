@@ -23,7 +23,7 @@ public class PlayerService {
     @Autowired
     private JWTService jwtService;
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
 
     public Player register(Player player) {
         // Check for duplicate entries
