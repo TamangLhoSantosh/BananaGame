@@ -3,6 +3,7 @@ package com.tamanglhosantosh.bananagame.service;
 import com.tamanglhosantosh.bananagame.model.Player;
 import com.tamanglhosantosh.bananagame.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,8 @@ public class PlayerService {
     @Autowired
     private PlayerRepository playerRepository;
 
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+
     public Player register(Player player) {
         // Check for duplicate entries
         Optional<Player> existingPlayer = playerRepository.findByUsername(player.getUsername())
@@ -22,6 +25,8 @@ public class PlayerService {
         if (existingPlayer.isPresent()) {
             return null;
         }
+
+        player.setPassword(passwordEncoder.encode(player.getPassword()));
         return playerRepository.save(player); // Save the new player to the repository
     }
 
