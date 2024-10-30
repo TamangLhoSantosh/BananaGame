@@ -10,16 +10,30 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
+/**
+ * Service for loading data in security context
+ * This class implements Spring Security's UserDetailsService interface
+ * to provide user authentication based on username.
+ */
 @Service
 public class PlayerDetailsService implements UserDetailsService {
+    /**
+     * Automatically injects the PlayerRepository bean
+     */
     @Autowired
     private PlayerRepository playerRepository;
 
+    /**
+     * Loads user details by username.
+     *
+     * @param username The username of the player to load.
+     * @return UserDetails containing the player's information.
+     * @throws UsernameNotFoundException If the player with the specified username is not found.
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Player> player = playerRepository.findByUsername(username);
         if (player.isEmpty()) {
-            System.out.println(("Player not found: " + username));
             throw new UsernameNotFoundException("Player not found: " + username);
         }
         return new PlayerPrincipal(player.get());

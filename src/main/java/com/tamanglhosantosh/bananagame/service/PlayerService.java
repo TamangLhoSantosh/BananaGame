@@ -12,19 +12,39 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for retrieving, writing data of player
+ */
 @Service
 public class PlayerService {
+
+    /**
+     * Automatically injects the PlayerRepository bean
+     */
     @Autowired
     private PlayerRepository playerRepository;
 
+    /**
+     * Automatically injects the AuthenticationManager bean
+     */
     @Autowired
     AuthenticationManager authenticationManager;
 
+    /**
+     * Automatically injects the JWTService bean
+     */
     @Autowired
     private JWTService jwtService;
 
+    // Sets a BCryptPasswordEncoder with a strength of 12 for hashing passwords.
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
 
+    /**
+     * Registers a new player in the system.
+     *
+     * @param player Player to be registered.
+     * @return registered Player, or null if username/email is already in use.
+     */
     public Player register(Player player) {
         // Check for duplicate entries
         Optional<Player> existingPlayer = playerRepository.findByUsername(player.getUsername())
@@ -36,9 +56,15 @@ public class PlayerService {
         }
 
         player.setPassword(passwordEncoder.encode(player.getPassword()));
-        return playerRepository.save(player); // Save the new player to the repository
+        return playerRepository.save(player); // Save and return the new player to the repository
     }
 
+    /**
+     * Authenticates a player and generates a JWT token if successful.
+     *
+     * @param player The Player details containing username and password.
+     * @return A JWT token if authentication is successful, otherwise "Fail".
+     */
     public String login(Player player) {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(player.getUsername(), player.getPassword()));
@@ -49,14 +75,29 @@ public class PlayerService {
         return "Fail";
     }
 
-    public Optional<Player> findById(Integer id) {
+    /**
+     * Finds a player by their ID.
+     *
+     * @param id The ID of the player to retrieve.
+     * @return the Player, or null if not found.
+     */    public Optional<Player> findById(Integer id) {
         return playerRepository.findById(id);
     }
 
+    /**
+     * Retrieves all players in the system.
+     *
+     * @return A list of all Player.
+     */
     public List<Player> findAll() {
         return playerRepository.findAll();
     }
 
+    /**
+     * Deletes a player by their ID.
+     *
+     * @param id The ID of the player to delete.
+     */
     public void deleteById(Integer id) {
         playerRepository.deleteById(id);
     }

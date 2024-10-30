@@ -13,7 +13,20 @@ import java.util.Optional;
  */
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, Integer> {
+
+    /**
+     * Finds a Player by its username.
+     *
+     * @param username The username of the player to find.
+     * @return Player if found, null otherwise
+     */
     Optional<Player> findByUsername(String username); // Method to find player by username
 
+    /**
+     * Finds a Player by its email.
+     *
+     * @param email The email of the player to find.
+     * @return Player if found, null otherwise
+     */
     Optional<Player> findPlayerByEmail(String email); // Method to find player by email
 }

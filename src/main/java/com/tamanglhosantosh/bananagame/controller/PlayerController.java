@@ -14,7 +14,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class PlayerController {
-    private final PlayerService playerService; // Service for interacting with Player data
+
+    /**
+     * Service for interacting with Player data
+     */
+    private final PlayerService playerService;
 
     /**
      * Constructor for PlayerController.
@@ -56,7 +60,7 @@ public class PlayerController {
      */
     @PostMapping("/player/register")
     public Player register(@RequestBody Player player) {
-        return playerService.register(player);
+        return playerService.register(player); // Adds new player to the database
     }
 
     /**
@@ -66,10 +70,10 @@ public class PlayerController {
      */
     @DeleteMapping("/player")
     public void deletePlayer(@RequestParam("id") Integer id) {
-        playerService.deleteById(id);
+        playerService.deleteById(id); // Deletes the data of the selected player
     }
 
-    /**
+    /**w
      * Logs in a player by checking their credentials.
      *
      * @param player The player request body containing username and password.
