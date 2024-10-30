@@ -1,6 +1,7 @@
 package com.tamanglhosantosh.bananagame.service;
 
 import com.tamanglhosantosh.bananagame.model.Player;
+import com.tamanglhosantosh.bananagame.model.PlayerPrincipal;
 import com.tamanglhosantosh.bananagame.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

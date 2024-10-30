@@ -1,6 +1,5 @@
-package com.tamanglhosantosh.bananagame.service;
+package com.tamanglhosantosh.bananagame.model;
 
-import com.tamanglhosantosh.bananagame.model.Player;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
