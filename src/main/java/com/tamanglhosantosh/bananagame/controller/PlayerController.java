@@ -73,7 +73,8 @@ public class PlayerController {
         playerService.deleteById(id); // Deletes the data of the selected player
     }
 
-    /**w
+    /**
+     * w
      * Logs in a player by checking their credentials.
      *
      * @param player The player request body containing username and password.

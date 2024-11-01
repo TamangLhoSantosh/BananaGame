@@ -17,7 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * SecurityConfig is the main configuration class that allows custom configuration.
+ * SecurityConfig is the main configuration class that allows custom
+ * configuration.
  * The configuration class defines the layers and the flow of the filters in the
  * application.
  */
@@ -32,14 +33,15 @@ public class SecurityConfig {
 
     /**
      * Component of Spring that filters the incoming HTTP requests to
-     *  * authenticate the players based on the jwt tokens.
+     * * authenticate the players based on the jwt tokens.
      */
     @Autowired
     private JwtFilter jwtFilter;
 
     /**
      * Configures HTTP security, specifying which endpoints are publicly accessible,
-     * disabling CSRF (as it is not needed for stateless authentication), and setting
+     * disabling CSRF (as it is not needed for stateless authentication), and
+     * setting
      * up JWT-based stateless session management.
      *
      * @param http HttpSecurity object to customize HTTP security behavior
@@ -55,13 +57,17 @@ public class SecurityConfig {
                         .permitAll()
                         .anyRequest().authenticated()) // allows authenticated access only
                 .httpBasic(Customizer.withDefaults()) // enables basic http security
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // stateless http request
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // ensures jwtfilter before usernameoasswordauthenticationfilter
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // stateless
+                                                                                                              // http
+                                                                                                              // request
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // ensures jwtfilter before
+                                                                                        // usernameoasswordauthenticationfilter
                 .build(); // apply all the specified filters
     }
 
     /**
-     * Creates and configures an AuthenticationProvider to retrieve player information.
+     * Creates and configures an AuthenticationProvider to retrieve player
+     * information.
      *
      * @return a configured DaoAuthenticationProvider instance
      */
@@ -72,12 +78,14 @@ public class SecurityConfig {
         authProvider.setUserDetailsService(userDetailsService);
         return authProvider;
     }
+
     /**
      * Provides the AuthenticationManager for handling authentication requests.
      * This bean is needed for authenticating requests based on the application's
      * configuration.
      *
-     * @param config the AuthenticationConfiguration to retrieve the AuthenticationManager from
+     * @param config the AuthenticationConfiguration to retrieve the
+     *               AuthenticationManager from
      * @return a configured AuthenticationManager instance
      * @throws Exception if an error occurs while creating the AuthenticationManager
      */
