@@ -12,6 +12,7 @@ import java.util.List;
  * for Player data.
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class PlayerController {
 
