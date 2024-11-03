@@ -2,6 +2,7 @@ package com.tamanglhosantosh.bananagame.controller;
 
 import com.tamanglhosantosh.bananagame.service.PlayerService;
 import com.tamanglhosantosh.bananagame.model.Player;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class PlayerController {
      *         email are available, otherwise null.
      */
     @PostMapping("/player/register")
-    public Player register(@RequestBody Player player) {
+    public ResponseEntity<?> register(@RequestBody Player player) {
         return playerService.register(player); // Adds new player to the database
     }
 
@@ -82,7 +83,7 @@ public class PlayerController {
      * @return The Player entity if credentials are valid, otherwise null.
      */
     @PostMapping("/player/login")
-    public String login(@RequestBody Player player) {
+    public ResponseEntity<?> login(@RequestBody Player player) {
         return playerService.login(player);
     }
 }

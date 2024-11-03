@@ -3,6 +3,8 @@ package com.tamanglhosantosh.bananagame.service;
 import com.tamanglhosantosh.bananagame.model.Player;
 import com.tamanglhosantosh.bananagame.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -43,36 +45,50 @@ public class PlayerService {
      * Registers a new player in the system.
      *
      * @param player Player to be registered.
-     * @return registered Player, or null if username/email is already in use.
+     * @return registered Player, or error response if player already exists.
      */
-    public Player register(Player player) {
+    public ResponseEntity<?> register(Player player) {
         // Check for duplicate entries
         Optional<Player> existingPlayer = playerRepository.findByUsername(player.getUsername())
                 .or(() -> playerRepository.findPlayerByEmail(player.getUsername()));
 
         // Return null if username and email is not available
         if (existingPlayer.isPresent()) {
-            return null;
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Username or email already exists.");
         }
 
         player.setPassword(passwordEncoder.encode(player.getPassword()));
-        return playerRepository.save(player); // Save and return the new player to the repository
+        Player savedPlayer = playerRepository.save(player);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(savedPlayer); // Save and return the new player to the repository
     }
 
     /**
      * Authenticates a player and generates a JWT token if successful.
      *
      * @param player The Player details containing username and password.
-     * @return A JWT token if authentication is successful, otherwise "Fail".
+     * @return A JWT token if authentication is successful, otherwise sends a message.
      */
-    public String login(Player player) {
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(player.getUsername(), player.getPassword()));
+    public ResponseEntity<?> login(Player player) {
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(player.getUsername(), player.getPassword()));
 
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(player.getUsername());
+            if (authentication.isAuthenticated()) {
+                String token = jwtService.generateToken(player.getUsername());
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(token);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // To catch any errors in authentication or token generation
         }
-        return "Fail";
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid username or password.");
     }
 
     /**
