@@ -3,7 +3,6 @@ package com.tamanglhosantosh.bananagame.controller;
 import com.tamanglhosantosh.bananagame.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
  * This class is responsible for handling requests related to the game.
  */
 @RestController
-@CrossOrigin
 @RequestMapping("/api")
 public class GameController {
 
