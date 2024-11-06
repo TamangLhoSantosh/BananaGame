@@ -36,7 +36,7 @@ public class GameService {
         try {
             String gameURL = "https://marcconrad.com/uob/banana/api.php?out=json";
             ResponseEntity<String> response = restTemplate.exchange(gameURL, HttpMethod.GET, null,
-                    new ParameterizedTypeReference<String>() {
+                    new ParameterizedTypeReference<>() {
                     });
             // Parse the response body as JSON
             ObjectMapper objectMapper = new ObjectMapper();
