@@ -11,7 +11,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -62,7 +64,6 @@ public class PlayerService {
                 .status(HttpStatus.CREATED)
                 .body(savedPlayer); // Save and return the new player to the repository
     }
-
     /**
      * Authenticates a player and generates a JWT token if successful.
      *
@@ -74,20 +75,25 @@ public class PlayerService {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(player.getUsername(), player.getPassword()));
 
-            if (authentication.isAuthenticated()) {
-                String token = jwtService.generateToken(player.getUsername());
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body(token);
+            if (!authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
             }
+
+            Optional<Player> loggedPlayer = playerRepository.findByUsername(player.getUsername());
+            if (loggedPlayer.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
+            }
+
+            String token = jwtService.generateToken(player.getUsername());
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("id", loggedPlayer.get().getId());
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
         } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid username or password."); // To catch any errors in authentication or token generation
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
         }
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body("Invalid username or password.");
     }
 
     /**
