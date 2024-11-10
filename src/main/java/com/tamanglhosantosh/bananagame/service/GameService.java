@@ -52,7 +52,7 @@ public class GameService {
             } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Excpetion occurred while fetching game data");
+                    "Excepetion occurred while fetching game data");
         }
     }
 }

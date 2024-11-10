@@ -48,12 +48,9 @@ public class PlayerService {
      * @return registered Player, or error response if player already exists.
      */
     public ResponseEntity<?> register(Player player) {
-        // Check for duplicate entries
-        Optional<Player> existingPlayer = playerRepository.findByUsername(player.getUsername())
-                .or(() -> playerRepository.findPlayerByEmail(player.getUsername()));
-
-        // Return null if username and email is not available
-        if (existingPlayer.isPresent()) {
+        // Check for duplicate entries for username or email
+        if (playerRepository.findByUsername(player.getUsername()).isPresent() ||
+                playerRepository.findPlayerByEmail(player.getEmail()).isPresent()) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body("Username or email already exists.");
@@ -62,7 +59,7 @@ public class PlayerService {
         player.setPassword(passwordEncoder.encode(player.getPassword()));
         Player savedPlayer = playerRepository.save(player);
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .body(savedPlayer); // Save and return the new player to the repository
     }
 
@@ -70,7 +67,7 @@ public class PlayerService {
      * Authenticates a player and generates a JWT token if successful.
      *
      * @param player The Player details containing username and password.
-     * @return A JWT token if authentication is successful, otherwise sends a message.
+     * @return A JWT token if authentication is successful, otherwise sends an error message.
      */
     public ResponseEntity<?> login(Player player) {
         try {
@@ -84,7 +81,9 @@ public class PlayerService {
                         .body(token);
             }
         } catch (Exception e) {
-            e.printStackTrace(); // To catch any errors in authentication or token generation
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid username or password."); // To catch any errors in authentication or token generation
         }
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
