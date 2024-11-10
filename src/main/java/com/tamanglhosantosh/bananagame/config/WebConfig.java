@@ -50,6 +50,8 @@ public class WebConfig  {
         source.registerCorsConfiguration("/**", config);
 
         // Registers the CORS filter
-        return new FilterRegistrationBean<>(new CorsFilter(source));
+        FilterRegistrationBean<CorsFilter> bean= new FilterRegistrationBean<>(new CorsFilter(source));
+        bean.setOrder(-102);
+        return bean;
     }
 }
