@@ -1,11 +1,10 @@
 package com.tamanglhosantosh.bananagame.controller;
 
+import com.tamanglhosantosh.bananagame.model.GameHistory;
 import com.tamanglhosantosh.bananagame.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller for handling game-related API requests.
@@ -29,5 +28,26 @@ public class GameController {
     @GetMapping("/game")
     public ResponseEntity<?> getGame() {
         return gameService.getGame();
+    }
+
+    /**
+     * Add history of user to the system.
+     *
+     * @param gameHistory Game history entity to add
+     * @return the added game history
+     */
+    @PostMapping("/game-history")
+    public ResponseEntity<?> addGameHistory(@RequestBody GameHistory gameHistory) {
+        return gameService.save(gameHistory);
+    }
+
+    /**
+     * Retrieves the game history based on player id
+     * @param playerId id to search for player
+     * @return the list of game history if exists, else null
+     */
+    @GetMapping("/game-history")
+    public ResponseEntity<?> getGameHistory(@RequestParam int playerId) {
+        return gameService.getGameHistory(playerId);
     }
 }
