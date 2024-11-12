@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +75,7 @@ public class GameService {
      */
     public ResponseEntity<?> save(GameHistory gameHistory) {
         try {
+            gameHistory.setPlayedAt(Timestamp.from(Instant.now()));
             GameHistory history = gameHistoryRepository.save(gameHistory);
             return ResponseEntity.status(HttpStatus.CREATED).body(history);
         }catch (Exception e) {

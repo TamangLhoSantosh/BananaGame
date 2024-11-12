@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.sql.Timestamp;
+
 /**
  * Represents the history of the game played.
  * This class stores the player's id and game status.
@@ -24,7 +27,8 @@ public class GameHistory {
 
     private Boolean game_status; // Game Status
 
-    @ManyToOne
-    @JoinColumn(name = "player_id", referencedColumnName = "id") // Foreign key to Player entity
-    private Player player; // Reference to Player entity
+    @Column(name = "player_id") // Store the player's ID directly in the database
+    private int playerId; // Player's id
+
+    private Timestamp playedAt; // Timestamp for when the game was played
 }
