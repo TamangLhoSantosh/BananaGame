@@ -2,7 +2,6 @@ package com.tamanglhosantosh.bananagame.controller;
 
 import com.tamanglhosantosh.bananagame.model.GameHistory;
 import com.tamanglhosantosh.bananagame.service.GameService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +16,17 @@ public class GameController {
     /**
      * Service for handling game-related operations.
      */
-    @Autowired
-    private GameService gameService;
+    private final GameService gameService;
+
+
+    /**
+     * Constructor for GameController.
+     *
+     * @param gameService The repository used to manage Player entities.
+     */
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
+    }
 
     /**
      * Retrieves the game details.

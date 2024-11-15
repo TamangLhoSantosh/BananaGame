@@ -1,6 +1,5 @@
 package com.tamanglhosantosh.bananagame.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,15 +27,24 @@ public class SecurityConfig {
     /**
      * Service for loading data during authorization process.
      */
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
     /**
      * Component of Spring that filters the incoming HTTP requests to
      * * authenticate the players based on the jwt tokens.
      */
-    @Autowired
-    private JwtFilter jwtFilter;
+    private final JwtFilter jwtFilter;
+
+    /**
+     * Constructor for SecurityConfig.
+     *
+     * @param userDetailsService The service used to load user-specific data (e.g., for authentication).
+     * @param jwtFilter The filter responsible for validating and processing JWT tokens in requests.
+     */
+    public SecurityConfig(UserDetailsService userDetailsService, JwtFilter jwtFilter) {
+        this.userDetailsService = userDetailsService;
+        this.jwtFilter = jwtFilter;
+    }
 
     /**
      * Configures HTTP security, specifying which endpoints are publicly accessible,
@@ -92,5 +100,15 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    /**
+     * Configures BCryptPasswordEncoder for hashing passwords with a strength of 12.
+     *
+     * @return a configured BCryptPasswordEncoder instance
+     */
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12);
     }
 }

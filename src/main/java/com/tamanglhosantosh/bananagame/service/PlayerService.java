@@ -2,7 +2,6 @@ package com.tamanglhosantosh.bananagame.service;
 
 import com.tamanglhosantosh.bananagame.model.Player;
 import com.tamanglhosantosh.bananagame.repository.PlayerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,31 +16,56 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Service for retrieving, writing data of player
+ * Service class for managing player data. It is used for retrieving,
+ * writing data of player.
  */
 @Service
 public class PlayerService {
 
     /**
-     * Automatically injects the PlayerRepository bean
+     * PlayerRepository instance used for interacting with the player data in the database.
+     * It handles CRUD operations related to Player entities, such as creating, updating,
+     * and retrieving player records.
      */
-    @Autowired
-    private PlayerRepository playerRepository;
+    private final PlayerRepository playerRepository;
 
     /**
-     * Automatically injects the AuthenticationManager bean
+     * AuthenticationManager instance for handling authentication logic.
+     * It is used to authenticate users, ensuring that only authorized players can access certain services.
      */
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     /**
-     * Automatically injects the JWTService bean
+     * JWTService instance used to handle JWT token creation and validation.
+     * This service is responsible for issuing JWT tokens and verifying their authenticity during
+     * authentication and authorization processes.
      */
-    @Autowired
-    private JWTService jwtService;
+    private final JWTService jwtService;
 
-    // Sets a BCryptPasswordEncoder with a strength of 12 for hashing passwords.
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+    /**
+     * BCryptPasswordEncoder instance for securely hashing player passwords.
+     * This encoder is used to hash passwords before saving them to the database, ensuring
+     * secure storage of player credentials.
+     */
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    /**
+     * Constructor for the PlayerService class, which initializes it with the necessary dependencies.
+     * This constructor sets up the service with components for handling player data, authentication,
+     * password security, and JWT management.
+     *
+     * @param playerRepository The repository used for managing Player entities.
+     * @param jwtService The service used for creating and verifying JWT tokens.
+     * @param authenticationManager The manager for authenticating players.
+     * @param passwordEncoder The encoder for securely hashing player passwords.
+     */
+    public PlayerService(PlayerRepository playerRepository, JWTService jwtService,
+                         AuthenticationManager authenticationManager, BCryptPasswordEncoder passwordEncoder) {
+        this.playerRepository = playerRepository;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     /**
      * Registers a new player in the system.

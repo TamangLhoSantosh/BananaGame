@@ -3,7 +3,6 @@ package com.tamanglhosantosh.bananagame.service;
 import com.tamanglhosantosh.bananagame.model.Player;
 import com.tamanglhosantosh.bananagame.model.PlayerPrincipal;
 import com.tamanglhosantosh.bananagame.repository.PlayerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,11 +16,25 @@ import java.util.Optional;
  */
 @Service
 public class PlayerDetailsService implements UserDetailsService {
+
     /**
-     * Automatically injects the PlayerRepository bean
+     * PlayerRepository instance for managing Player entities in the database.
+     * This repository is automatically injected by Spring, enabling CRUD operations
+     * for Player records, such as finding, saving, updating, and deleting player data.
      */
-    @Autowired
-    private PlayerRepository playerRepository;
+    private final PlayerRepository playerRepository;
+
+    /**
+     * Constructor for the PlayerDetailsService class, initializing it with the necessary
+     * PlayerRepository dependency. This setup ensures that PlayerDetailsService has access
+     * to player data and can perform database operations related to player management.
+     *
+     * @param playerRepository The repository used to handle CRUD operations for Player entities.
+     */
+    public PlayerDetailsService(PlayerRepository playerRepository) {
+        this.playerRepository = playerRepository;
+    }
+
 
     /**
      * Loads user details by username.

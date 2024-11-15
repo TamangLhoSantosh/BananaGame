@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tamanglhosantosh.bananagame.model.GameHistory;
 import com.tamanglhosantosh.bananagame.repository.GameHistoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -27,16 +26,31 @@ import java.util.Map;
 public class GameService {
 
     /**
-     * RestTemplate for making HTTP requests.
+     * RestTemplate instance used for making HTTP requests to external APIs or services.
+     * It provides convenient methods for various HTTP operations (GET, POST, etc.)
+     * and simplifies the process of sending and receiving HTTP requests/responses.
      */
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     /**
-     * Automatically injects the GameRepository bean
+     * GameHistoryRepository instance for interacting with the database.
+     * This repository is automatically injected (by Spring) and used to perform CRUD operations
+     * on game history records, providing a way to store and retrieve game history data.
      */
-    @Autowired
-    private GameHistoryRepository gameHistoryRepository;
+    private final GameHistoryRepository gameHistoryRepository;
+
+    /**
+     * Constructor for the GameService class, which initializes the service with
+     * required dependencies. This ensures the GameService has the tools it needs to
+     * make HTTP requests and manage game history records.
+     *
+     * @param restTemplate The RestTemplate used to handle HTTP requests in the game service.
+     * @param gameHistoryRepository The repository used to manage and persist game history records.
+     */
+    public GameService(RestTemplate restTemplate, GameHistoryRepository gameHistoryRepository) {
+        this.restTemplate = restTemplate;
+        this.gameHistoryRepository = gameHistoryRepository;
+    }
 
     /**
      * Retrieves the game details from an external API.

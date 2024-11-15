@@ -13,5 +13,12 @@ import java.util.List;
  */
 @Repository
 public interface GameHistoryRepository extends JpaRepository<GameHistory, Integer> {
+
+    /**
+     * Finds a Player Game History by their id.
+     *
+     * @param playerId The id of the player to find.
+     * @return List of game history of the player.
+     */
     List<GameHistory> findByPlayerId(int playerId);
 }
