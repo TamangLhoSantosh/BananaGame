@@ -100,12 +100,12 @@ public class PlayerService {
                     .authenticate(new UsernamePasswordAuthenticationToken(player.getUsername(), player.getPassword()));
 
             if (!authentication.isAuthenticated()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password.");
             }
 
             Optional<Player> loggedPlayer = playerRepository.findByUsername(player.getUsername());
             if (loggedPlayer.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password.");
             }
 
             String token = jwtService.generateToken(player.getUsername());
@@ -116,7 +116,7 @@ public class PlayerService {
             return ResponseEntity.status(HttpStatus.OK).body(response);
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password.");
         }
     }
 
