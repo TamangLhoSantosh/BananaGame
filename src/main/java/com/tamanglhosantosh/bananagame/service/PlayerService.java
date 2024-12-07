@@ -2,77 +2,122 @@ package com.tamanglhosantosh.bananagame.service;
 
 import com.tamanglhosantosh.bananagame.model.Player;
 import com.tamanglhosantosh.bananagame.repository.PlayerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
- * Service for retrieving, writing data of player
+ * Service class for managing player data. It is used for retrieving,
+ * writing data of player.
  */
 @Service
 public class PlayerService {
 
     /**
-     * Automatically injects the PlayerRepository bean
+     * PlayerRepository instance used for interacting with the player data in the database.
+     * It handles CRUD operations related to Player entities, such as creating, updating,
+     * and retrieving player records.
      */
-    @Autowired
-    private PlayerRepository playerRepository;
+    private final PlayerRepository playerRepository;
 
     /**
-     * Automatically injects the AuthenticationManager bean
+     * AuthenticationManager instance for handling authentication logic.
+     * It is used to authenticate users, ensuring that only authorized players can access certain services.
      */
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     /**
-     * Automatically injects the JWTService bean
+     * JWTService instance used to handle JWT token creation and validation.
+     * This service is responsible for issuing JWT tokens and verifying their authenticity during
+     * authentication and authorization processes.
      */
-    @Autowired
-    private JWTService jwtService;
+    private final JWTService jwtService;
 
-    // Sets a BCryptPasswordEncoder with a strength of 12 for hashing passwords.
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+    /**
+     * BCryptPasswordEncoder instance for securely hashing player passwords.
+     * This encoder is used to hash passwords before saving them to the database, ensuring
+     * secure storage of player credentials.
+     */
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    /**
+     * Constructor for the PlayerService class, which initializes it with the necessary dependencies.
+     * This constructor sets up the service with components for handling player data, authentication,
+     * password security, and JWT management.
+     *
+     * @param playerRepository The repository used for managing Player entities.
+     * @param jwtService The service used for creating and verifying JWT tokens.
+     * @param authenticationManager The manager for authenticating players.
+     * @param passwordEncoder The encoder for securely hashing player passwords.
+     */
+    public PlayerService(PlayerRepository playerRepository, JWTService jwtService,
+                         AuthenticationManager authenticationManager, BCryptPasswordEncoder passwordEncoder) {
+        this.playerRepository = playerRepository;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     /**
      * Registers a new player in the system.
      *
      * @param player Player to be registered.
-     * @return registered Player, or null if username/email is already in use.
+     * @return registered Player, or error response if player already exists.
      */
-    public Player register(Player player) {
-        // Check for duplicate entries
-        Optional<Player> existingPlayer = playerRepository.findByUsername(player.getUsername())
-                .or(() -> playerRepository.findPlayerByEmail(player.getUsername()));
-
-        // Return null if username and email is not available
-        if (existingPlayer.isPresent()) {
-            return null;
+    public ResponseEntity<?> register(Player player) {
+        // Check for duplicate entries for username or email
+        if (playerRepository.findByUsername(player.getUsername()).isPresent() ||
+                playerRepository.findPlayerByEmail(player.getEmail()).isPresent()) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Username or email already exists.");
         }
 
         player.setPassword(passwordEncoder.encode(player.getPassword()));
-        return playerRepository.save(player); // Save and return the new player to the repository
+        Player savedPlayer = playerRepository.save(player);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(savedPlayer); // Save and return the new player to the repository
     }
-
     /**
      * Authenticates a player and generates a JWT token if successful.
      *
      * @param player The Player details containing username and password.
-     * @return A JWT token if authentication is successful, otherwise "Fail".
+     * @return A JWT token if authentication is successful, otherwise sends an error message.
      */
-    public String login(Player player) {
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(player.getUsername(), player.getPassword()));
+    public ResponseEntity<?> login(Player player) {
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(player.getUsername(), player.getPassword()));
 
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(player.getUsername());
+            if (!authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password.");
+            }
+
+            Optional<Player> loggedPlayer = playerRepository.findByUsername(player.getUsername());
+            if (loggedPlayer.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password.");
+            }
+
+            String token = jwtService.generateToken(player.getUsername());
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("id", loggedPlayer.get().getId());
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password.");
         }
-        return "Fail";
     }
 
     /**

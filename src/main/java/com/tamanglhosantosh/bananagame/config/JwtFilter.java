@@ -6,7 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NonNull;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,15 +28,24 @@ public class JwtFilter extends OncePerRequestFilter {
     /**
      * Service for generating and validating jwt tokens.
      */
-    @Autowired
-    private JWTService jwtService;
+    private final JWTService jwtService;
 
     /**
      * The Spring application context, used to retrieve beans like PlayerDetailsService.
      */
-    @Autowired
-    ApplicationContext context;
+    private final ApplicationContext context;
 
+    /**
+     * Constructor for the JwtFilter class, initializing the service with the necessary
+     * dependencies for JWT management.
+     *
+     * @param jwtService The service responsible for handling JWT operations, such as generating and validating tokens.
+     * @param context The Spring ApplicationContext used to retrieve other beans, like PlayerDetailsService.
+     */
+    public JwtFilter(JWTService jwtService, ApplicationContext context) {
+        this.jwtService = jwtService;
+        this.context = context;
+    }
 
     /**
      * Filters each request, checking for the presence of a jwt token in the
@@ -49,7 +58,7 @@ public class JwtFilter extends OncePerRequestFilter {
      * @throws IOException      if an I/O error occurs during filtering
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
         // Extract JWT token from Authorization header
